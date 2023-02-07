@@ -1,0 +1,8 @@
+wandb*
+__pycache__/
+*.png
+*.pickle
+*.pth
+*.pt
+*.mp4
+weight*
