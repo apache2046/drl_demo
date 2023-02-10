@@ -33,7 +33,7 @@ class ReplayBuffer:
                 _, _, _, r, done_mask = trajectory[trans_idx + i]
                 u += (self.gamma ** i) * r
 
-            if done_mask == 0:
+            if done_mask == 0 or trans_idx >= traj_len - asteps:
                 s_next = s
                 a_next = a
             else:

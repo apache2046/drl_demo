@@ -21,7 +21,7 @@ ENV_NAME = "Ant-v4"
 learning_rate = 1e-3
 tau = 0.9
 device = "cuda:0"
-weight_file = os.path.dirname(__file__) + "/weights/" + os.path.basename(__file__).split(".")[0] + ".pt"
+weight_file = os.path.dirname(__file__) + "/weights/" + os.path.basename(__file__).split(".")[0] + "_3.pt"
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 add_arg = parser.add_argument
@@ -39,13 +39,13 @@ args = parser.parse_args()
 
 def show(agent: TD3_Agent, pth_file):
     agent.load_checkpoint(pth_file)
-    env = gym.make(ENV_NAME, ctrl_cost_weight=1e-3,  render_mode='human')
+    env = gym.make(ENV_NAME, ctrl_cost_weight=1e-3,  render_mode='human', healthy_z_range=(0.3, 1))
     # env.unwrapped.frame_skip = 20
     while True:
         s, _ = env.reset()
         done = False
         while not done:
-            # env.render()
+            env.render()
             a = agent.act_deterministic(s)
             s, r, done, truncated, info = env.step(a)
             if done or truncated:
@@ -58,8 +58,8 @@ def main():
     config.update(args)
     batch_size = args.batch_size
 
-    env = gym.make(ENV_NAME, ctrl_cost_weight=1e-3)
-    env.unwrapped.frame_skip = 20
+    env = gym.make(ENV_NAME)#, ctrl_cost_weight=1e-3)
+    # env.unwrapped.frame_skip = 20
     action_count = env.action_space.shape[0]
     observation_count = env.observation_space.shape[0]
 
@@ -111,11 +111,11 @@ def main():
                     # if need_render:
                     #     env.render()
                     # r += _r # - 0.1
-                    r += info['reward_forward']
+                    r += _r #info['reward_forward']
                     steps += 1
                     if done:
                         break
-                # if steps >= 1600:  # max(300, 2000 * min(1, n_epi / 30000)):
+                # if steps >= 10000:  # max(300, 2000 * min(1, n_epi / 30000)):
                 #     done = True
                 if done:
                     done_mask = 0.0
